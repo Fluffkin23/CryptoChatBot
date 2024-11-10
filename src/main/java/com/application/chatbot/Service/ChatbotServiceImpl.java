@@ -2,8 +2,11 @@ package com.application.chatbot.Service;
 
 import com.application.chatbot.dto.CoinDTO;
 import com.application.chatbot.response.APIResponse;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +16,7 @@ import java.util.Map;
 @Service
 public class ChatbotServiceImpl implements ChatbotService {
 
+    String GEMINI_API_KEY ="AIzaSyCVIMKSe0MAVizuEA2uyNtXbJ1gvl37F2c";
     private double convertToDouble(Object value){
         if(value instanceof Integer){
             return ((Integer)value).doubleValue();
@@ -79,6 +83,20 @@ public class ChatbotServiceImpl implements ChatbotService {
     // ask whatever questions
     @Override
     public String simpleChat(String prompt) {
-        return "";
+        String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + GEMINI_API_KEY;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String requestBody = new JSONObject()
+                .put("contents", new JSONArray()
+                    .put(new JSONObject()
+                        .put("parts", new JSONArray()
+                                .put(new JSONObject()
+                                        .put("text",prompt))))).toString();
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody,headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(GEMINI_API_URL,requestEntity,String.class);
+
+        return response.getBody();
     }
 }

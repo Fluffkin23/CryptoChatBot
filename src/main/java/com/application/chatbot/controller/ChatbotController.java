@@ -25,8 +25,6 @@ public class ChatbotController {
 
         chatbotService.getCoinDetails(promptBody.getPrompt());
 
-
-
         APIResponse apiResponse = new APIResponse();
         apiResponse.setMessage(promptBody.getPrompt());
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);

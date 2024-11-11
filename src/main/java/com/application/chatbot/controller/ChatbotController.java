@@ -5,10 +5,7 @@ import com.application.chatbot.dto.PromptBody;
 import com.application.chatbot.response.APIResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("ai/chat")
@@ -21,6 +18,7 @@ public class ChatbotController {
     }
 
     @PostMapping
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<APIResponse> getCoinDetails(@RequestBody PromptBody promptBody) throws Exception {
 
         APIResponse apiResponse = chatbotService.getCoinDetails(promptBody.getPrompt());

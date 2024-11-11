@@ -1,10 +1,25 @@
+import {useState} from "react";
+import PromptMessage from "@/app/components/PromptMessage";
+import ResponseMessage from "@/app/components/ResponseMessage";
+import axios from "axios";
 
 
 const Chatbox = () => {
 
-    const handlerFetchCoinDetails = (prompt) =>{
-        console.log("Coin Details Fetching...", prompt);
-    }
+    const [responses,setRespones] = useState();
+    const[laoding, setLoading] = useState(false);
+
+    const handlerFetchCoinDetails =  async (prompt) =>{
+        setLoading(true);
+        try {
+            const {data} = await axios.post("http://localhost:5454/ai/chat", {prompt})
+            console.log("Success, ", data)
+        }
+        catch (error){
+            console.log("fetching.. ", prompt)
+        }
+        setLoading(false)
+    };
     return(
         <div className="chat-box blur-background large-shadow z-50 bg-[#000518]
         bg-opacity-70 w-[90vw] md:w-[70vw] lg:w-[40vw] pb-6 h-[85vh]">
@@ -17,6 +32,14 @@ const Chatbox = () => {
                 </div>
             </div>
            <div className="h-[77%]">
+               <div className="flex flex-col py-5 px-5 overflow-y-auto h-full custom-scrollbar">
+                   {[1,1,1].map((item,index) =>
+                   index % 2 === 0 ?
+                   <div className="self-end" key = {index}>
+                       <PromptMessage message={"prompt message"}/>
+                   </div> : <div className="self-start" key={index}> <ResponseMessage message={"response message"}/> </div>
+                   )}
+               </div>
                <div className="p-10 gap-5 h-full flex flex-col justify-center items-center">
                    <p className="text-2xl font-bold"> Welcome to the crypto chat bot</p>
                    <p className="text-gray-500"> Inquire about market data</p>
@@ -30,7 +53,7 @@ const Chatbox = () => {
                         }
                     }
                 }
-                    onChange={(e) => console.log(e.target.value)}
+                    // onChange={(e) => console.log(e.target.value)}
                     type="text" className="h-full rounded-full border-gray-700 border bg-transparent px-5 w-full
                 outline-none" placeholder="Ask something..."/>
             </div>

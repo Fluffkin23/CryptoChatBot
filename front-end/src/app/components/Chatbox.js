@@ -3,22 +3,25 @@ import PromptMessage from "@/app/components/PromptMessage";
 import ResponseMessage from "@/app/components/ResponseMessage";
 import axios from "axios";
 
-
 const Chatbox = () => {
 
-    const [responses,setRespones] = useState();
-    const[laoding, setLoading] = useState(false);
+    const [responses,setResponses] = useState([]);
+    const[loading, setLoading] = useState(false);
 
-    const handlerFetchCoinDetails =  async (prompt) =>{
+    const handlerFetchCoinDetails = async (prompt) => {
         setLoading(true);
+        const userPrompt = { message: prompt, role: "user" };
+        setResponses((prev) => [...prev, userPrompt]); // Add user message here
+
         try {
-            const {data} = await axios.post("http://localhost:5454/ai/chat", {prompt})
-            console.log("Success, ", data)
+            const { data } = await axios.post("http://localhost:5454/ai/chat", { prompt });
+            const response = { message: data.message, role: "model" };
+            setResponses((prev) => [...prev, response]); // Add response here
+            console.log("Success, ", data);
+        } catch (error) {
+            console.log("fetching.. ", prompt);
         }
-        catch (error){
-            console.log("fetching.. ", prompt)
-        }
-        setLoading(false)
+        setLoading(false);
     };
     return(
         <div className="chat-box blur-background large-shadow z-50 bg-[#000518]
@@ -33,11 +36,11 @@ const Chatbox = () => {
             </div>
            <div className="h-[77%]">
                <div className="flex flex-col py-5 px-5 overflow-y-auto h-full custom-scrollbar">
-                   {[1,1,1].map((item,index) =>
-                   index % 2 === 0 ?
+                   {responses.map((item,index) =>
+                   item.role === "user" ?
                    <div className="self-end" key = {index}>
-                       <PromptMessage message={"prompt message"}/>
-                   </div> : <div className="self-start" key={index}> <ResponseMessage message={"response message"}/> </div>
+                       <PromptMessage message={item.message}/>
+                   </div> : <div className="self-start" key={index}> <ResponseMessage message={item.message}/> </div>
                    )}
                </div>
                <div className="p-10 gap-5 h-full flex flex-col justify-center items-center">
@@ -50,6 +53,7 @@ const Chatbox = () => {
                     onKeyPress={(e) => {
                         if (e.key === 'Enter') {
                             handlerFetchCoinDetails(e.target.value);
+                            e.target.value = ""; // Clear the input field after submission
                         }
                     }
                 }

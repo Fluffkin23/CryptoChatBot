@@ -12,7 +12,7 @@ public class HomeController {
     @GetMapping
     public ResponseEntity<APIResponse>Home(){
         APIResponse response = new APIResponse();
-        response.setMessage("Welcome to AI Chatbot");
+        response.setMessage("Welcome to AI Chatbox");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

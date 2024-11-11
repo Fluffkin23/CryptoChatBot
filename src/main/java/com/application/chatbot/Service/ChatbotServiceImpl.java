@@ -79,7 +79,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         CoinDTO apiResponse = makeAPIRequest(prompt);
         FunctionResponse res = getFunctionResponse(prompt);
-        String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + GEMINI_API_KEY;
+        String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -113,8 +113,6 @@ public class ChatbotServiceImpl implements ChatbotService {
                                         )
 
                                 )
-
-
                         )
                         // Provide the data, grab inside and grab the value
                         .put(new JSONObject()
@@ -123,7 +121,7 @@ public class ChatbotServiceImpl implements ChatbotService {
                                         .put(new JSONObject()
                                                 .put("functionResponse", new JSONObject()
                                                         .put("name", "getCoinDetails")
-                                                        .put("res", new JSONObject()
+                                                        .put("response", new JSONObject()
                                                                 .put("name", "getCoinDetails")
                                                                 .put("content",apiResponse)
                                                         )

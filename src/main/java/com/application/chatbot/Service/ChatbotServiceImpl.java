@@ -33,7 +33,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 
 
     public CoinDTO makeAPIRequest(String currencyName) throws Exception {
-        String url = "https://api.coingecko.com/api/v3/coins/bitcoin";
+        String url = "https://api.coingecko.com/api/v3/coins/" + currencyName;
 
         // for making http api request
         RestTemplate restTemplate = new RestTemplate();
@@ -77,8 +77,9 @@ public class ChatbotServiceImpl implements ChatbotService {
     @Override
     public APIResponse getCoinDetails(String prompt) throws Exception {
 
-        CoinDTO apiResponse = makeAPIRequest(prompt);
         FunctionResponse res = getFunctionResponse(prompt);
+        CoinDTO apiResponse = makeAPIRequest(res.getCurrencyName().toLowerCase());
+
         String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY;
 
         HttpHeaders headers = new HttpHeaders();
@@ -166,7 +167,18 @@ public class ChatbotServiceImpl implements ChatbotService {
         String responseBody = response.getBody();
         System.out.println( "-------------------------- :" + responseBody);
 
-        return null;
+        JSONObject jsonObject = new JSONObject(responseBody);
+        JSONArray candidates  = jsonObject.getJSONArray("candidates");
+        JSONObject firstCandidate = candidates.getJSONObject(0);
+
+        JSONObject content = firstCandidate.getJSONObject("content");
+        JSONArray parts = content.getJSONArray("parts");
+        JSONObject firstPart = parts.getJSONObject(0);
+        String text = firstPart.getString("text");
+        APIResponse answer = new APIResponse();
+        answer.setMessage(text);
+
+        return answer;
     }
 
     // ask whatever questions
@@ -260,8 +272,8 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         JSONObject jsonObject = new JSONObject(responseBody);
         JSONArray candidates = jsonObject.getJSONArray("candidates");
-        JSONObject firstCanditate = candidates.getJSONObject(0);
-        JSONObject content = firstCanditate.getJSONObject("content");
+        JSONObject firstCandidate = candidates.getJSONObject(0);
+        JSONObject content = firstCandidate.getJSONObject("content");
         JSONArray parts = content.getJSONArray("parts");
         JSONObject firstPart = parts.getJSONObject(0);
         JSONObject functionCall = firstPart.getJSONObject("functionCall");
@@ -281,6 +293,4 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         return res;
     }
-
-
 }

@@ -1,5 +1,8 @@
 package com.application.chatbot.response;
 
+import lombok.Data;
+
+@Data
 public class FunctionResponse {
       private String currencyName;
       private String functionName;
